@@ -32,6 +32,7 @@ class TestLog:
         for symbol in data.columns.levels[0]:
             self.assert_single(data[symbol], log_returns[symbol])
 
+
 class TestExtreme:
     def assert_count(self, original, extreme):
         values = original(None)
@@ -49,6 +50,20 @@ class TestExtreme:
         self.assert_count(FakeIndicator(), FakeIndicator().highest)
         assert np.nanmin(FakeIndicator().highest(0.5)(None)) == 5
         assert np.nanmax(FakeIndicator().highest(0.5)(None)) == 8
+    
+    def test_nan(self):
+        class FakeIndicator(Indicator):
+            def calculate(self, data):
+                arr = np.array([1, np.nan, 2, np.nan, 3])
+                return pd.Series(arr)
+        assert np.nanmin(FakeIndicator().lowest(0.5)(None)) == 1
+        assert np.nanmax(FakeIndicator().lowest(0.5)(None)) == 2
+        assert np.nanmin(FakeIndicator().highest(0.5)(None)) == 2
+        assert np.nanmax(FakeIndicator().highest(0.5)(None)) == 3
+        assert np.sum(~FakeIndicator().lowest(0)(None).isna()) == 0
+        assert np.sum(~FakeIndicator().lowest(0.5)(None).isna()) == 2
+        assert np.sum(~FakeIndicator().lowest(1)(None).isna()) == 3
+
 
 class TestFillNA:
     def test_value(self):

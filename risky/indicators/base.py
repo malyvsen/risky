@@ -48,7 +48,7 @@ class Indicator:
                     result = all_results.copy()
                     result[:] = np.nan
                     return result
-                border_value = np.quantile(all_results, quantile)
+                border_value = np.nanquantile(all_results, quantile)
                 masked_results = all_results.copy()
                 if part == 'lowest':
                     masked_results[masked_results > border_value] = np.nan
