@@ -1,9 +1,12 @@
+import pandas as pd
 from risky.data import fetch
 
 
 
 class TestOHLCV:
     def assert_ohlcv(self, df):
+        if isinstance(df.columns, pd.MultiIndex):
+            df = df.reorder_levels(order=[1, 0], axis=1)
         assert 'open' in df
         assert 'high' in df
         assert 'low' in df
