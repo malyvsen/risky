@@ -30,3 +30,29 @@ class Indicator:
             def calculate(self, data):
                 return np.log(slave.calculate(data))
         return Log()
+    
+    def lowest(self, fraction):
+        return self.extreme(part='lowest', fraction=fraction)
+    
+    def highest(self, fraction):
+        return self.extreme(part='highest', fraction=fraction)
+    
+    def extreme(self, part, fraction):
+        assert part == 'lowest' or part == 'highest'
+        slave = self
+        quantile = fraction if part == 'lowest' else 1 - fraction
+        class Extreme(Indicator):
+            def calculate(self, data):
+                all_results = slave.calculate(data)
+                if fraction == 0:
+                    result = all_results.copy()
+                    result[:] = np.nan
+                    return result
+                border_value = np.quantile(all_results, quantile)
+                masked_results = all_results.copy()
+                if part == 'lowest':
+                    masked_results[masked_results > border_value] = np.nan
+                else:
+                    masked_results[masked_results < border_value] = np.nan
+                return masked_results
+        return Extreme()
