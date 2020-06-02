@@ -56,3 +56,10 @@ class Indicator:
                     masked_results[masked_results < border_value] = np.nan
                 return masked_results
         return Extreme()
+    
+    def fillna(self, value=None, method=None, limit=None):
+        slave = self
+        class FillNA(Indicator):
+            def calculate(self, data):
+                return slave.calculate(data).fillna(value=value, method=method, limit=limit)
+        return FillNA()
