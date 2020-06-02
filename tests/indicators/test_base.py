@@ -33,18 +33,19 @@ class TestLog:
             self.assert_single(data[symbol], log_returns[symbol])
 
 class TestExtreme:
+    def assert_count(self, original, extreme):
+        values = original(None)
+        for i in range(len(values) + 1):
+            fraction = i / len(values)
+            extreme_values = extreme(fraction)(None)
+            assert np.sum(~extreme_values.isna()) == i
+
     def test_low(self):
-        fake = FakeIndicator()
-        fake_values = fake(None)
-        for i in range(len(fake_values) + 1):
-            fraction = i / len(fake_values)
-            lowest = fake.lowest(fraction)(None)
-            assert np.sum(~lowest.isna()) == i
+        self.assert_count(FakeIndicator(), FakeIndicator().lowest)
+        assert np.nanmin(FakeIndicator().lowest(0.5)(None)) == 1
+        assert np.nanmax(FakeIndicator().lowest(0.5)(None)) == 4
 
     def test_high(self):
-        fake = FakeIndicator()
-        fake_values = fake(None)
-        for i in range(len(fake_values) + 1):
-            fraction = i / len(fake_values)
-            highest = fake.highest(fraction)(None)
-            assert np.sum(~highest.isna()) == i
+        self.assert_count(FakeIndicator(), FakeIndicator().highest)
+        assert np.nanmin(FakeIndicator().highest(0.5)(None)) == 5
+        assert np.nanmax(FakeIndicator().highest(0.5)(None)) == 8
