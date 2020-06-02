@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -22,3 +23,10 @@ class Indicator:
                     result[symbol] = self.calculate(data[symbol])
                 return pd.DataFrame.from_dict(result)
         return self.calculate(data)
+
+    def log(self):
+        slave = self
+        class Log(Indicator):
+            def calculate(self, data):
+                return np.log(slave.calculate(data))
+        return Log()
