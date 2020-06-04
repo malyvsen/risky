@@ -12,4 +12,4 @@ class Diff(Indicator):
         return self.slave.calculate(data).diff(periods=self.period)
 
 
-Indicator.diff = lambda self: Diff(self)
+Indicator.diff = lambda self, period: Diff(self, period)
